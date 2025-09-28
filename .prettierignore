@@ -1,0 +1,46 @@
+# Dependencies
+node_modules
+bun.lockb
+package-lock.json
+yarn.lock
+
+# Build outputs
+.next
+out
+dist
+build
+
+# Environment files
+.env*
+
+# Logs
+*.log
+
+# Cache directories
+.cache
+.turbo
+
+# IDE files
+.vscode
+.idea
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Generated files
+*.tsbuildinfo
+next-env.d.ts
+
+# Public assets (usually don't need formatting)
+public/**
+
+# Config files that shouldn't be formatted
+*.config.js
+*.config.ts
+tailwind.config.*
+postcss.config.*
+next.config.*
+
+# Markdown files (optional - remove if you want to format markdown)
+# *.md
