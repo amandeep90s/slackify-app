@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuthActions } from '@convex-dev/auth/react';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useForm } from 'react-hook-form';
+import { Controller, useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 
 import { EmailVerificationStep, SignInFlow } from '@/types/auth';
@@ -10,7 +10,7 @@ import { cn } from '@/lib/utils';
 import { EmailVerificationFormData, emailVerificationSchema } from '@/lib/validators';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
+import { InputOTP, InputOTPGroup, InputOTPSlot } from '@/components/ui/input-otp';
 import { Label } from '@/components/ui/label';
 import { Error } from '@/components/core/error';
 
@@ -28,12 +28,7 @@ export const EmailVerificationCard = ({
   const { signIn } = useAuthActions();
   const router = useRouter();
 
-  const {
-    handleSubmit,
-    register,
-    formState: { errors, isSubmitting },
-    reset,
-  } = useForm<EmailVerificationFormData>({
+  const form = useForm<EmailVerificationFormData>({
     resolver: zodResolver(emailVerificationSchema),
     mode: 'onBlur',
     reValidateMode: 'onChange',
@@ -42,6 +37,12 @@ export const EmailVerificationCard = ({
       code: '',
     },
   });
+
+  const {
+    handleSubmit,
+    formState: { errors, isSubmitting },
+    reset,
+  } = form;
 
   const onSubmit = async (data: EmailVerificationFormData) => {
     setError(null);
@@ -104,37 +105,106 @@ export const EmailVerificationCard = ({
 
         <div className={cn('rounded-lg border border-blue-200 bg-blue-50 p-4')}>
           <p className={cn('text-sm text-blue-700')}>
-            📧 Check your email for a verification code and enter it below to complete your
+            Check your email for a verification code and enter it below to complete your
             registration.
           </p>
         </div>
 
         <form onSubmit={handleSubmit(onSubmit)} className={cn('space-y-5')}>
-          <div>
-            <Label className={cn('mb-2')} htmlFor="code">
-              Verification Code
-            </Label>
-            <Input
-              type="text"
-              {...register('code')}
-              name="code"
-              id="code"
-              placeholder="Enter 8-digit code"
-              autoComplete="one-time-code"
-              disabled={isSubmitting}
-              className={cn(errors.code && 'border-destructive focus-visible:ring-destructive/20')}
-              maxLength={8}
-              autoFocus
-            />
+          <div className={cn('space-y-3')}>
+            <Label className={cn('block text-center')}>Enter Verification Code</Label>
+            <div className={cn('flex justify-center')}>
+              <Controller
+                name="code"
+                control={form.control}
+                render={({ field }) => (
+                  <InputOTP
+                    maxLength={6}
+                    value={field.value}
+                    onChange={(value) => {
+                      field.onChange(value);
+                      // Auto-submit when all 6 digits are entered
+                      if (value.length === 6) {
+                        handleSubmit(onSubmit)();
+                      }
+                    }}
+                    disabled={isSubmitting}
+                    className={cn('gap-2', errors.code && 'border-destructive')}
+                  >
+                    <InputOTPGroup>
+                      <InputOTPSlot
+                        index={0}
+                        className={cn(
+                          'h-12 w-12 text-lg font-semibold',
+                          errors.code && 'border-destructive'
+                        )}
+                      />
+                      <InputOTPSlot
+                        index={1}
+                        className={cn(
+                          'h-12 w-12 text-lg font-semibold',
+                          errors.code && 'border-destructive'
+                        )}
+                      />
+                      <InputOTPSlot
+                        index={2}
+                        className={cn(
+                          'h-12 w-12 text-lg font-semibold',
+                          errors.code && 'border-destructive'
+                        )}
+                      />
+                      <InputOTPSlot
+                        index={3}
+                        className={cn(
+                          'h-12 w-12 text-lg font-semibold',
+                          errors.code && 'border-destructive'
+                        )}
+                      />
+                      {/* </InputOTPGroup>
+                    <div className={cn('mx-2 flex items-center')}>
+                      <div className={cn('bg-border h-px w-2')}></div>
+                    </div>
+                    <InputOTPGroup className={cn('gap-2')}> */}
+                      <InputOTPSlot
+                        index={4}
+                        className={cn(
+                          'h-12 w-12 text-lg font-semibold',
+                          errors.code && 'border-destructive'
+                        )}
+                      />
+                      <InputOTPSlot
+                        index={5}
+                        className={cn(
+                          'h-12 w-12 text-lg font-semibold',
+                          errors.code && 'border-destructive'
+                        )}
+                      />
+                    </InputOTPGroup>
+                  </InputOTP>
+                )}
+              />
+            </div>
             {errors.code && (
-              <p className="text-destructive mt-1 text-xs" role="alert">
+              <p className="text-destructive mt-1 text-center text-xs" role="alert">
                 {errors.code.message}
               </p>
             )}
+            <p className={cn('text-muted-foreground text-center text-sm')}>
+              Please enter the 6-digit code sent to your email
+            </p>
           </div>
 
-          <Button type="submit" className={cn('w-full')} size={'lg'} disabled={isSubmitting}>
-            {isSubmitting ? 'Verifying...' : 'Verify Email'}
+          <Button
+            type="submit"
+            className={cn('w-full')}
+            size={'lg'}
+            disabled={isSubmitting || form.watch('code').length < 6}
+          >
+            {isSubmitting
+              ? 'Verifying...'
+              : form.watch('code').length === 6
+                ? 'Verifying...'
+                : 'Enter Code Above'}
           </Button>
         </form>
 
