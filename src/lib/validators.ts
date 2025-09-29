@@ -30,9 +30,9 @@ export const signUpSchema = z
 export const emailVerificationSchema = z.object({
   code: z
     .string()
-    .min(8, 'Verification code must be 8 digits')
-    .max(8, 'Verification code must be 8 digits')
-    .regex(/^\d{8}$/, 'Verification code must contain only numbers'),
+    .min(6, 'Verification code must be 6 digits')
+    .max(6, 'Verification code must be 6 digits')
+    .regex(/^\d{6}$/, 'Verification code must contain only numbers'),
 });
 
 export const forgotPasswordSchema = z.object({
