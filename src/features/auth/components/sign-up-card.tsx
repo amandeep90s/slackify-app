@@ -1,7 +1,11 @@
+import { useState } from 'react';
+import { useRouter } from 'next/navigation';
+import { useAuthActions } from '@convex-dev/auth/react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import { FaGithub } from 'react-icons/fa';
 import { FcGoogle } from 'react-icons/fc';
+import { toast } from 'sonner';
 
 import { OnProvider, SignInFlow } from '@/types/auth';
 import { cn } from '@/lib/utils';
@@ -11,6 +15,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Separator } from '@/components/ui/separator';
+import { Error } from '@/components/core/error';
 
 interface SignUpCardProps {
   setSignInFlow: (data: SignInFlow) => void;
@@ -18,6 +23,10 @@ interface SignUpCardProps {
 }
 
 export const SignUpCard = ({ setSignInFlow, onProviderSignIn }: SignUpCardProps) => {
+  const [error, setError] = useState<string | null>(null);
+  const { signIn } = useAuthActions();
+  const router = useRouter();
+
   const {
     handleSubmit,
     register,
@@ -35,9 +44,18 @@ export const SignUpCard = ({ setSignInFlow, onProviderSignIn }: SignUpCardProps)
     },
   });
 
-  const onSubmit = (data: SignUpFormData) => {
-    console.log(data);
-    reset();
+  const onSubmit = async (data: SignUpFormData) => {
+    setError(null);
+    const { email, password } = data;
+    signIn('password', { email, password, flow: 'signUp' })
+      .then(() => {
+        toast('You are signed up successfully!');
+        reset();
+        router.push('/');
+      })
+      .catch(() => {
+        setError('An unknown error occurred while signing up');
+      });
   };
 
   return (
@@ -47,6 +65,8 @@ export const SignUpCard = ({ setSignInFlow, onProviderSignIn }: SignUpCardProps)
         <CardDescription>Use your email or another service to continue</CardDescription>
       </CardHeader>
       <CardContent className={cn('space-y-5 px-0 pb-0')}>
+        {error && <Error error={error} />}
+
         <form onSubmit={handleSubmit(onSubmit)} className={cn('space-y-5')}>
           <div>
             <Label className={cn('mb-2')} htmlFor="email">

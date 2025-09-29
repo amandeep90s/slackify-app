@@ -1,7 +1,11 @@
+import { useState } from 'react';
+import { useRouter } from 'next/navigation';
+import { useAuthActions } from '@convex-dev/auth/react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import { FaGithub } from 'react-icons/fa';
 import { FcGoogle } from 'react-icons/fc';
+import { toast } from 'sonner';
 
 import { OnProvider, SignInFlow } from '@/types/auth';
 import { cn } from '@/lib/utils';
@@ -11,6 +15,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Separator } from '@/components/ui/separator';
+import { Error } from '@/components/core/error';
 
 interface SignInCardProps {
   setSignInFlow: (data: SignInFlow) => void;
@@ -18,6 +23,10 @@ interface SignInCardProps {
 }
 
 export const SignInCard = ({ setSignInFlow, onProviderSignIn }: SignInCardProps) => {
+  const [error, setError] = useState<string | null>(null);
+  const { signIn } = useAuthActions();
+  const router = useRouter();
+
   const {
     handleSubmit,
     register,
@@ -35,8 +44,17 @@ export const SignInCard = ({ setSignInFlow, onProviderSignIn }: SignInCardProps)
   });
 
   const onSubmit = (data: SignInFormData) => {
-    console.log(data);
-    reset();
+    setError(null);
+    const { email, password } = data;
+    signIn('password', { email, password, flow: 'signIn' })
+      .then(() => {
+        toast('You are signed in successfully!');
+        reset();
+        router.push('/');
+      })
+      .catch(() => {
+        setError('Invalid email or password');
+      });
   };
 
   return (
@@ -46,6 +64,8 @@ export const SignInCard = ({ setSignInFlow, onProviderSignIn }: SignInCardProps)
         <CardDescription>Use your email or another service to continue</CardDescription>
       </CardHeader>
       <CardContent className={cn('space-y-5 px-0 pb-0')}>
+        {error && <Error error={error} />}
+
         <form onSubmit={handleSubmit(onSubmit)} className={cn('space-y-5')}>
           <div>
             <Label className={cn('mb-2')} htmlFor="email">
