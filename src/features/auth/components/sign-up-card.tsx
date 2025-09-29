@@ -3,14 +3,14 @@ import { useForm } from 'react-hook-form';
 import { FaGithub } from 'react-icons/fa';
 import { FcGoogle } from 'react-icons/fc';
 
+import { SignInFlow } from '@/types/auth';
 import { cn } from '@/lib/utils';
+import { SignUpFormData, signUpSchema } from '@/lib/validators';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 import { Separator } from '@/components/ui/separator';
-
-import { SignUpFormData, signUpSchema } from '../schemas';
-import { SignInFlow } from '../types';
 
 interface SignUpCardProps {
   setSignInFlow: (data: SignInFlow) => void;
@@ -46,14 +46,16 @@ export const SignUpCard = ({ setSignInFlow }: SignUpCardProps) => {
         <CardDescription>Use your email or another service to continue</CardDescription>
       </CardHeader>
       <CardContent className={cn('space-y-5 px-0 pb-0')}>
-        <form onSubmit={handleSubmit(onSubmit)} className={cn('space-y-3')}>
+        <form onSubmit={handleSubmit(onSubmit)} className={cn('space-y-5')}>
           <div>
+            <Label className={cn('mb-2')} htmlFor="email">
+              Email
+            </Label>
             <Input
               type="email"
               {...register('email')}
               name="email"
               id="email"
-              placeholder="Email address"
               autoComplete="email"
               disabled={isSubmitting}
               className={cn(errors.email && 'border-destructive focus-visible:ring-destructive/20')}
@@ -65,12 +67,14 @@ export const SignUpCard = ({ setSignInFlow }: SignUpCardProps) => {
             )}
           </div>
           <div>
+            <Label className={cn('mb-2')} htmlFor="password">
+              Password
+            </Label>
             <Input
               type="password"
               {...register('password')}
               name="password"
               id="password"
-              placeholder="Password"
               autoComplete="new-password"
               disabled={isSubmitting}
               className={cn(
@@ -84,12 +88,14 @@ export const SignUpCard = ({ setSignInFlow }: SignUpCardProps) => {
             )}
           </div>
           <div>
+            <Label className={cn('mb-2')} htmlFor="confirmPassword">
+              Confirm Password
+            </Label>
             <Input
               type="password"
               {...register('confirmPassword')}
               name="confirmPassword"
               id="confirmPassword"
-              placeholder="Confirm Password"
               autoComplete="new-password"
               disabled={isSubmitting}
               className={cn(
