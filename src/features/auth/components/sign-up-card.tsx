@@ -1,5 +1,4 @@
 import { useState } from 'react';
-import { useRouter } from 'next/navigation';
 import { useAuthActions } from '@convex-dev/auth/react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
@@ -7,7 +6,7 @@ import { FaGithub } from 'react-icons/fa';
 import { FcGoogle } from 'react-icons/fc';
 import { toast } from 'sonner';
 
-import { OnProvider, SignInFlow } from '@/types/auth';
+import { EmailVerificationStep, OnProvider, SignInFlow } from '@/types/auth';
 import { cn } from '@/lib/utils';
 import { SignUpFormData, signUpSchema } from '@/lib/validators';
 import { Button } from '@/components/ui/button';
@@ -20,12 +19,16 @@ import { Error } from '@/components/core/error';
 interface SignUpCardProps {
   setSignInFlow: (data: SignInFlow) => void;
   onProviderSignIn: (provider: OnProvider) => void;
+  setVerificationData: (data: EmailVerificationStep) => void;
 }
 
-export const SignUpCard = ({ setSignInFlow, onProviderSignIn }: SignUpCardProps) => {
+export const SignUpCard = ({
+  setSignInFlow,
+  onProviderSignIn,
+  setVerificationData,
+}: SignUpCardProps) => {
   const [error, setError] = useState<string | null>(null);
   const { signIn } = useAuthActions();
-  const router = useRouter();
 
   const {
     handleSubmit,
@@ -38,6 +41,7 @@ export const SignUpCard = ({ setSignInFlow, onProviderSignIn }: SignUpCardProps)
     reValidateMode: 'onChange',
     shouldFocusError: true,
     defaultValues: {
+      name: '',
       email: '',
       password: '',
       confirmPassword: '',
@@ -46,16 +50,24 @@ export const SignUpCard = ({ setSignInFlow, onProviderSignIn }: SignUpCardProps)
 
   const onSubmit = async (data: SignUpFormData) => {
     setError(null);
-    const { email, password } = data;
-    signIn('password', { email, password, flow: 'signUp' })
-      .then(() => {
-        toast('You are signed up successfully!');
-        reset();
-        router.push('/');
-      })
-      .catch(() => {
-        setError('An unknown error occurred while signing up');
-      });
+    const { name, email, password } = data;
+
+    try {
+      // Trigger email verification
+      await signIn('password', { name, email, password, flow: 'signUp' });
+
+      // Store verification data for the next step
+      setVerificationData({ email, name, password });
+
+      // Move to email verification step
+      setSignInFlow('emailVerification');
+
+      toast('Verification code sent to your email!');
+      reset();
+    } catch (err) {
+      setError('Failed to send verification email. Please try again.');
+      console.error('Sign up error:', err);
+    }
   };
 
   return (
@@ -68,6 +80,25 @@ export const SignUpCard = ({ setSignInFlow, onProviderSignIn }: SignUpCardProps)
         {error && <Error error={error} />}
 
         <form onSubmit={handleSubmit(onSubmit)} className={cn('space-y-5')}>
+          <div>
+            <Label className={cn('mb-2')} htmlFor="name">
+              Full Name
+            </Label>
+            <Input
+              type="text"
+              {...register('name')}
+              name="name"
+              id="name"
+              autoComplete="name"
+              disabled={isSubmitting}
+              className={cn(errors.name && 'border-destructive focus-visible:ring-destructive/20')}
+            />
+            {errors.name && (
+              <p className="text-destructive mt-1 text-xs" role="alert">
+                {errors.name.message}
+              </p>
+            )}
+          </div>
           <div>
             <Label className={cn('mb-2')} htmlFor="email">
               Email
