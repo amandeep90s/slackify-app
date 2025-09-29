@@ -3,7 +3,7 @@ import { useForm } from 'react-hook-form';
 import { FaGithub } from 'react-icons/fa';
 import { FcGoogle } from 'react-icons/fc';
 
-import { SignInFlow } from '@/types/auth';
+import { OnProvider, SignInFlow } from '@/types/auth';
 import { cn } from '@/lib/utils';
 import { SignUpFormData, signUpSchema } from '@/lib/validators';
 import { Button } from '@/components/ui/button';
@@ -14,9 +14,10 @@ import { Separator } from '@/components/ui/separator';
 
 interface SignUpCardProps {
   setSignInFlow: (data: SignInFlow) => void;
+  onProviderSignIn: (provider: OnProvider) => void;
 }
 
-export const SignUpCard = ({ setSignInFlow }: SignUpCardProps) => {
+export const SignUpCard = ({ setSignInFlow, onProviderSignIn }: SignUpCardProps) => {
   const {
     handleSubmit,
     register,
@@ -114,12 +115,22 @@ export const SignUpCard = ({ setSignInFlow }: SignUpCardProps) => {
         </form>
         <Separator />
         <div className={cn('flex flex-col gap-y-3')}>
-          <Button type="button" variant={'outline'} className={cn('w-full')}>
+          <Button
+            type="button"
+            variant={'outline'}
+            onClick={() => onProviderSignIn('google')}
+            className={cn('w-full')}
+          >
             <FcGoogle className={cn('size-5')} />
             Continue with Google
           </Button>
 
-          <Button type="button" variant={'outline'} className={cn('w-full')}>
+          <Button
+            type="button"
+            variant={'outline'}
+            onClick={() => onProviderSignIn('github')}
+            className={cn('w-full')}
+          >
             <FaGithub className={cn('size-5')} />
             Continue with Github
           </Button>
