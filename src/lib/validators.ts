@@ -30,12 +30,36 @@ export const signUpSchema = z
 export const emailVerificationSchema = z.object({
   code: z
     .string()
-    .min(6, 'Verification code must be 6 digits')
-    .max(6, 'Verification code must be 6 digits')
-    .regex(/^\d{6}$/, 'Verification code must contain only numbers'),
+    .min(8, 'Verification code must be 8 digits')
+    .max(8, 'Verification code must be 8 digits')
+    .regex(/^\d{8}$/, 'Verification code must contain only numbers'),
 });
+
+export const forgotPasswordSchema = z.object({
+  email: z.email('Please enter a valid email address').min(1, 'Email is required'),
+});
+
+export const resetPasswordSchema = z
+  .object({
+    code: z
+      .string()
+      .min(6, 'Verification code must be 6 digits')
+      .max(6, 'Verification code must be 6 digits')
+      .regex(/^\d{6}$/, 'Verification code must contain only numbers'),
+    newPassword: z
+      .string()
+      .min(8, 'Password must be at least 8 characters')
+      .max(100, 'Password must be less than 100 characters'),
+    confirmPassword: z.string().min(8, 'Please confirm your password'),
+  })
+  .refine((data) => data.newPassword === data.confirmPassword, {
+    message: 'Passwords do not match',
+    path: ['confirmPassword'],
+  });
 
 // Types
 export type SignInFormData = z.infer<typeof signInSchema>;
 export type SignUpFormData = z.infer<typeof signUpSchema>;
 export type EmailVerificationFormData = z.infer<typeof emailVerificationSchema>;
+export type ForgotPasswordFormData = z.infer<typeof forgotPasswordSchema>;
+export type ResetPasswordFormData = z.infer<typeof resetPasswordSchema>;

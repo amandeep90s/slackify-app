@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import React, { useState } from 'react';
 import { useAuthActions } from '@convex-dev/auth/react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
@@ -15,6 +15,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Separator } from '@/components/ui/separator';
 import { Error } from '@/components/core/error';
+import { InputError } from '@/components/core/input-error';
 
 interface SignUpCardProps {
   setSignInFlow: (data: SignInFlow) => void;
@@ -22,7 +23,7 @@ interface SignUpCardProps {
   setVerificationData: (data: EmailVerificationStep) => void;
 }
 
-export const SignUpCard = ({
+const SignUpCardComponent = ({
   setSignInFlow,
   onProviderSignIn,
   setVerificationData,
@@ -93,11 +94,7 @@ export const SignUpCard = ({
               disabled={isSubmitting}
               className={cn(errors.name && 'border-destructive focus-visible:ring-destructive/20')}
             />
-            {errors.name && (
-              <p className="text-destructive mt-1 text-xs" role="alert">
-                {errors.name.message}
-              </p>
-            )}
+            <InputError error={errors.name?.message} />
           </div>
           <div>
             <Label className={cn('mb-2')} htmlFor="email">
@@ -112,11 +109,7 @@ export const SignUpCard = ({
               disabled={isSubmitting}
               className={cn(errors.email && 'border-destructive focus-visible:ring-destructive/20')}
             />
-            {errors.email && (
-              <p className="text-destructive mt-1 text-xs" role="alert">
-                {errors.email.message}
-              </p>
-            )}
+            <InputError error={errors.email?.message} />
           </div>
           <div>
             <Label className={cn('mb-2')} htmlFor="password">
@@ -133,11 +126,7 @@ export const SignUpCard = ({
                 errors.password && 'border-destructive focus-visible:ring-destructive/20'
               )}
             />
-            {errors.password && (
-              <p className="text-destructive mt-1 text-xs" role="alert">
-                {errors.password.message}
-              </p>
-            )}
+            <InputError error={errors.password?.message} />
           </div>
           <div>
             <Label className={cn('mb-2')} htmlFor="confirmPassword">
@@ -154,11 +143,7 @@ export const SignUpCard = ({
                 errors.confirmPassword && 'border-destructive focus-visible:ring-destructive/20'
               )}
             />
-            {errors.confirmPassword && (
-              <p className="text-destructive mt-1 text-xs" role="alert">
-                {errors.confirmPassword.message}
-              </p>
-            )}
+            <InputError error={errors.confirmPassword?.message} />
           </div>
           <Button type="submit" className={cn('w-full')} size={'lg'} disabled={isSubmitting}>
             Continue
@@ -201,3 +186,5 @@ export const SignUpCard = ({
     </Card>
   );
 };
+
+export const SignUpCard = React.memo(SignUpCardComponent);

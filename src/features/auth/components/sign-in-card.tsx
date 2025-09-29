@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuthActions } from '@convex-dev/auth/react';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -16,13 +16,14 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Separator } from '@/components/ui/separator';
 import { Error } from '@/components/core/error';
+import { InputError } from '@/components/core/input-error';
 
 interface SignInCardProps {
   setSignInFlow: (data: SignInFlow) => void;
   onProviderSignIn: (provider: OnProvider) => void;
 }
 
-export const SignInCard = ({ setSignInFlow, onProviderSignIn }: SignInCardProps) => {
+const SignInCardComponent = ({ setSignInFlow, onProviderSignIn }: SignInCardProps) => {
   const [error, setError] = useState<string | null>(null);
   const { signIn } = useAuthActions();
   const router = useRouter();
@@ -80,33 +81,32 @@ export const SignInCard = ({ setSignInFlow, onProviderSignIn }: SignInCardProps)
               disabled={isSubmitting}
               className={cn(errors.email && 'border-destructive focus-visible:ring-destructive/20')}
             />
-            {errors.email && (
-              <p className="text-destructive mt-1 text-xs" role="alert">
-                {errors.email.message}
-              </p>
-            )}
+            <InputError error={errors.email?.message} />
           </div>
 
           <div>
-            <Label className={cn('mb-2')} htmlFor="password">
-              Password
-            </Label>
+            <div className={cn('mb-2 flex items-center justify-between')}>
+              <Label htmlFor="password">Password</Label>
+              <button
+                type="button"
+                onClick={() => setSignInFlow('forgotPassword')}
+                className={cn('cursor-pointer text-xs text-sky-700 hover:underline')}
+              >
+                Forgot password?
+              </button>
+            </div>
             <Input
               type="password"
               {...register('password')}
               name="password"
               id="password"
-              autoComplete="new-password"
+              autoComplete="current-password"
               disabled={isSubmitting}
               className={cn(
                 errors.password && 'border-destructive focus-visible:ring-destructive/20'
               )}
             />
-            {errors.password && (
-              <p className="text-destructive mt-1 text-xs" role="alert">
-                {errors.password.message}
-              </p>
-            )}
+            <InputError error={errors.password?.message} />
           </div>
           <Button type="submit" className={cn('w-full')} size={'lg'} disabled={isSubmitting}>
             Continue
@@ -149,3 +149,5 @@ export const SignInCard = ({ setSignInFlow, onProviderSignIn }: SignInCardProps)
     </Card>
   );
 };
+
+export const SignInCard = React.memo(SignInCardComponent);

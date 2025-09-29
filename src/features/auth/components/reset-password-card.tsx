@@ -5,64 +5,68 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { Controller, useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 
-import { EmailVerificationStep, SignInFlow } from '@/types/auth';
+import { ForgotPasswordStep, SignInFlow } from '@/types/auth';
 import { cn } from '@/lib/utils';
-import { EmailVerificationFormData, emailVerificationSchema } from '@/lib/validators';
+import { ResetPasswordFormData, resetPasswordSchema } from '@/lib/validators';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
 import { InputOTP, InputOTPGroup, InputOTPSlot } from '@/components/ui/input-otp';
 import { Label } from '@/components/ui/label';
 import { Error } from '@/components/core/error';
 import { InputError } from '@/components/core/input-error';
 
-interface EmailVerificationCardProps {
+interface ResetPasswordCardProps {
   setSignInFlow: (data: SignInFlow) => void;
-  verificationData: EmailVerificationStep;
+  forgotPasswordData: ForgotPasswordStep;
 }
 
-const EmailVerificationCardComponent = ({
+const ResetPasswordCardComponent = ({
   setSignInFlow,
-  verificationData,
-}: EmailVerificationCardProps) => {
+  forgotPasswordData,
+}: ResetPasswordCardProps) => {
   const [error, setError] = useState<string | null>(null);
   const [isResending, setIsResending] = useState(false);
   const { signIn } = useAuthActions();
   const router = useRouter();
 
-  const form = useForm<EmailVerificationFormData>({
-    resolver: zodResolver(emailVerificationSchema),
+  const form = useForm<ResetPasswordFormData>({
+    resolver: zodResolver(resetPasswordSchema),
     mode: 'onBlur',
     reValidateMode: 'onChange',
     shouldFocusError: true,
     defaultValues: {
       code: '',
+      newPassword: '',
+      confirmPassword: '',
     },
   });
 
   const {
     handleSubmit,
+    register,
     formState: { errors, isSubmitting },
     reset,
+    watch,
   } = form;
 
-  const onSubmit = async (data: EmailVerificationFormData) => {
+  const onSubmit = async (data: ResetPasswordFormData) => {
     setError(null);
 
     try {
       await signIn('password', {
         code: data.code,
-        flow: 'email-verification',
-        email: verificationData.email,
-        name: verificationData.name,
-        password: verificationData.password,
+        newPassword: data.newPassword,
+        email: forgotPasswordData.email,
+        flow: 'reset-verification',
       });
 
-      toast('Email verified successfully! Welcome to Slackify!');
+      toast('Password reset successfully! You are now signed in.');
       reset();
       router.push('/');
     } catch (err) {
-      setError('Invalid verification code. Please try again.');
-      console.error('Email verification error:', err);
+      setError('Invalid verification code or password reset failed. Please try again.');
+      console.error('Reset password error:', err);
     }
   };
 
@@ -71,17 +75,15 @@ const EmailVerificationCardComponent = ({
     setError(null);
 
     try {
-      // Resend the verification code by calling signUp again
+      // Resend the password reset code
       await signIn('password', {
-        name: verificationData.name,
-        email: verificationData.email,
-        password: verificationData.password,
-        flow: 'signUp',
+        email: forgotPasswordData.email,
+        flow: 'reset',
       });
 
-      toast('Verification code sent to your email!');
+      toast('Password reset code sent to your email!');
     } catch (err) {
-      setError('Failed to resend verification code. Please try again.');
+      setError('Failed to resend password reset code. Please try again.');
       console.error('Resend code error:', err);
     } finally {
       setIsResending(false);
@@ -89,16 +91,19 @@ const EmailVerificationCardComponent = ({
   };
 
   const handleCancel = () => {
-    setSignInFlow('signUp');
+    setSignInFlow('forgotPassword');
     setError(null);
   };
+
+  const codeValue = watch('code');
 
   return (
     <Card className={cn('h-full w-full p-8')}>
       <CardHeader className={cn('p-0')}>
-        <CardTitle>Verify your email</CardTitle>
+        <CardTitle>Reset Your Password</CardTitle>
         <CardDescription>
-          We&apos;ve sent a verification code to <strong>{verificationData.email}</strong>
+          Enter the verification code sent to <strong>{forgotPasswordData.email}</strong> and your
+          new password
         </CardDescription>
       </CardHeader>
       <CardContent className={cn('space-y-5 px-0 pb-0')}>
@@ -106,14 +111,14 @@ const EmailVerificationCardComponent = ({
 
         <div className={cn('rounded-lg border border-blue-200 bg-blue-50 p-4')}>
           <p className={cn('text-sm text-blue-700')}>
-            Check your email for a verification code and enter it below to complete your
-            registration.
+            🔐 Enter the 6-digit verification code from your email and choose a new secure password.
           </p>
         </div>
 
         <form onSubmit={handleSubmit(onSubmit)} className={cn('space-y-5')}>
+          {/* Verification Code Input */}
           <div className={cn('space-y-3')}>
-            <Label className={cn('block text-center')}>Enter Verification Code</Label>
+            <Label className={cn('block text-center')}>Verification Code</Label>
             <div className={cn('flex justify-center')}>
               <Controller
                 name="code"
@@ -122,13 +127,7 @@ const EmailVerificationCardComponent = ({
                   <InputOTP
                     maxLength={6}
                     value={field.value}
-                    onChange={(value) => {
-                      field.onChange(value);
-                      // Auto-submit when all 6 digits are entered
-                      if (value.length === 6) {
-                        handleSubmit(onSubmit)();
-                      }
-                    }}
+                    onChange={field.onChange}
                     disabled={isSubmitting}
                     className={cn('gap-2', errors.code && 'border-destructive')}
                   >
@@ -182,21 +181,62 @@ const EmailVerificationCardComponent = ({
             </div>
             <InputError error={errors.code?.message} className="text-center" />
             <p className={cn('text-muted-foreground text-center text-sm')}>
-              Please enter the 8-digit code sent to your email
+              Enter the 6-digit code sent to your email
             </p>
+          </div>
+
+          {/* New Password Input */}
+          <div>
+            <Label className={cn('mb-2')} htmlFor="newPassword">
+              New Password
+            </Label>
+            <Input
+              type="password"
+              {...register('newPassword')}
+              name="newPassword"
+              id="newPassword"
+              placeholder="Enter your new password"
+              autoComplete="new-password"
+              disabled={isSubmitting}
+              className={cn(
+                errors.newPassword && 'border-destructive focus-visible:ring-destructive/20'
+              )}
+            />
+            <InputError error={errors.newPassword?.message} />
+          </div>
+
+          {/* Confirm Password Input */}
+          <div>
+            <Label className={cn('mb-2')} htmlFor="confirmPassword">
+              Confirm Password
+            </Label>
+            <Input
+              type="password"
+              {...register('confirmPassword')}
+              name="confirmPassword"
+              id="confirmPassword"
+              placeholder="Confirm your new password"
+              autoComplete="new-password"
+              disabled={isSubmitting}
+              className={cn(
+                errors.confirmPassword && 'border-destructive focus-visible:ring-destructive/20'
+              )}
+            />
+            <InputError error={errors.confirmPassword?.message} />
           </div>
 
           <Button
             type="submit"
             className={cn('w-full')}
             size={'lg'}
-            disabled={isSubmitting || form.watch('code').length < 6}
+            disabled={
+              isSubmitting ||
+              codeValue.length < 6 ||
+              !watch('newPassword') ||
+              !watch('confirmPassword')
+            }
           >
-            {isSubmitting
-              ? 'Verifying...'
-              : form.watch('code').length === 6
-                ? 'Verifying...'
-                : 'Enter Code Above'}
+            {isSubmitting ? 'Resetting Password...' : 'Reset Password'}
           </Button>
         </form>
 
@@ -212,7 +252,7 @@ const EmailVerificationCardComponent = ({
           </Button>
 
           <Button type="button" variant="ghost" onClick={handleCancel} className={cn('w-full')}>
-            Back to Sign Up
+            Back to Email Entry
           </Button>
         </div>
 
@@ -234,4 +274,4 @@ const EmailVerificationCardComponent = ({
   );
 };
 
-export const EmailVerificationCard = React.memo(EmailVerificationCardComponent);
+export const ResetPasswordCard = React.memo(ResetPasswordCardComponent);
