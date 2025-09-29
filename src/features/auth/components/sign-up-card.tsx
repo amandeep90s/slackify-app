@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useAuthActions } from '@convex-dev/auth/react';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { useAction } from 'convex/react';
 import { useForm } from 'react-hook-form';
 import { FaGithub } from 'react-icons/fa';
 import { FcGoogle } from 'react-icons/fc';
@@ -17,6 +18,8 @@ import { Separator } from '@/components/ui/separator';
 import { Error } from '@/components/core/error';
 import { InputError } from '@/components/core/input-error';
 
+import { api } from '../../../../convex/_generated/api';
+
 interface SignUpCardProps {
   setSignInFlow: (data: SignInFlow) => void;
   onProviderSignIn: (provider: OnProvider) => void;
@@ -30,6 +33,7 @@ const SignUpCardComponent = ({
 }: SignUpCardProps) => {
   const [error, setError] = useState<string | null>(null);
   const { signIn } = useAuthActions();
+  const checkUserExists = useAction(api.authActions.checkUserExistsAction);
 
   const {
     handleSubmit,
@@ -54,7 +58,14 @@ const SignUpCardComponent = ({
     const { name, email, password } = data;
 
     try {
-      // Trigger email verification
+      // First, check if user already exists
+      const userExists = await checkUserExists({ email });
+
+      if (userExists) {
+        setError('Email already exists. Please choose another one.');
+        return;
+      }
+
       await signIn('password', { name, email, password, flow: 'signUp' });
 
       // Store verification data for the next step
