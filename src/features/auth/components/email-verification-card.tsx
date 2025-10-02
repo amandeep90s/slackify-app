@@ -104,13 +104,6 @@ const EmailVerificationCardComponent = ({
       <CardContent className={cn('space-y-5 px-0 pb-0')}>
         {error && <Error error={error} />}
 
-        <div className={cn('rounded-lg border border-blue-200 bg-blue-50 p-4')}>
-          <p className={cn('text-sm text-blue-700')}>
-            Check your email for a verification code and enter it below to complete your
-            registration.
-          </p>
-        </div>
-
         <form onSubmit={handleSubmit(onSubmit)} className={cn('space-y-5')}>
           <div className={cn('space-y-3')}>
             <Label className={cn('block text-center')}>Enter Verification Code</Label>

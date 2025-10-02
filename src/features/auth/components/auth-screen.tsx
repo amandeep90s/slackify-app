@@ -109,7 +109,7 @@ export const AuthScreen = () => {
   // Memoize header to prevent unnecessary re-renders
   const header = useMemo(
     () => (
-      <div className={cn('mb-3 text-center')}>
+      <div className={cn('animate-fade-in-up mb-3 text-center')}>
         <h1
           className={cn(
             'text-2xl font-semibold uppercase md:text-4xl',
@@ -125,7 +125,7 @@ export const AuthScreen = () => {
   );
 
   return (
-    <div className={cn('flex min-h-screen items-center justify-center bg-[#3F0E40]')}>
+    <div className={cn('bg-auth-background flex min-h-screen items-center justify-center')}>
       <div className={cn('w-full max-w-sm px-4 md:h-auto md:max-w-md md:px-0')}>
         {header}
         <Suspense fallback={<LoadingSpinner />}>

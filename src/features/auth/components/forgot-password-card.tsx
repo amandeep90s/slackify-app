@@ -83,13 +83,6 @@ const ForgotPasswordCardComponent = ({
       <CardContent className={cn('space-y-5 px-0 pb-0')}>
         {error && <Error error={error} />}
 
-        <div className={cn('rounded-lg border border-blue-200 bg-blue-50 p-4')}>
-          <p className={cn('text-sm text-blue-700')}>
-            🔒 We&apos;ll send a 6-digit verification code to your email address to help you reset
-            your password securely.
-          </p>
-        </div>
-
         <form onSubmit={handleSubmit(onSubmit)} className={cn('space-y-5')}>
           <div>
             <Label className={cn('mb-2')} htmlFor="email">
