@@ -2,9 +2,10 @@ import type { Metadata } from 'next';
 import { Geist, Geist_Mono } from 'next/font/google';
 import { ConvexAuthNextjsServerProvider } from '@convex-dev/auth/nextjs/server';
 
+import { APP_DESCRIPTION, APP_NAME } from '@/lib/constants';
 import { Toaster } from '@/components/ui/sonner';
-import { ConvexClientProvider } from '@/components/ConvexClientProvider';
 import { Modals } from '@/components/core/modals';
+import { ConvexClientProvider } from '@/components/providers';
 
 import '@/styles/globals.css';
 
@@ -19,8 +20,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: 'Slackify',
-  description: 'A Slack clone built with Next.js, Tailwind CSS, and Shadcn UI',
+  title: APP_NAME,
+  description: APP_DESCRIPTION,
 };
 
 export default function RootLayout({

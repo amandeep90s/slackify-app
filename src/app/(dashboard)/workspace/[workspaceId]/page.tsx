@@ -5,9 +5,6 @@ interface WorkspaceIdPageProps {
 export default async function WorkspaceIdPage({ params }: WorkspaceIdPageProps) {
   const { workspaceId } = await params;
 
-  // Log successful workspace navigation for debugging
-  console.log('🏢 Workspace Page: Successfully navigated to workspace:', workspaceId);
-
   return (
     <div className="p-8">
       <h1 className="mb-4 text-2xl font-bold">Welcome to Workspace</h1>
