@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useQueryClient } from '@tanstack/react-query';
 import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 
@@ -16,11 +15,8 @@ import { InputError } from '@/components/core/input-error';
 import { useCreateWorkspace } from '@/features/workspaces/api/use-create-workspace';
 import { useCreateWorkspaceModal } from '@/features/workspaces/store/use-create-workspace-modal';
 
-import { api } from '../../../../convex/_generated/api';
-
 export const CreateWorkspaceModal = () => {
   const router = useRouter();
-  const queryClient = useQueryClient();
 
   const [open, setOpen] = useCreateWorkspaceModal();
   const { mutate: createWorkspace, isPending, error: workspaceError } = useCreateWorkspace();
@@ -55,7 +51,7 @@ export const CreateWorkspaceModal = () => {
           toast.success('Workspace created successfully!');
 
           // Invalidate and refetch workspaces to update the list
-          queryClient.invalidateQueries({ queryKey: ['convexQuery', api.workspaces.get, {}] });
+          // queryClient.invalidateQueries({ queryKey: ['convexQuery', api.workspaces.get, {}] });
 
           // Close modal and reset form
           setOpen(false);
