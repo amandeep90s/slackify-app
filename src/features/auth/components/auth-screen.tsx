@@ -2,6 +2,7 @@
 
 import { lazy, Suspense, useCallback, useMemo, useState } from 'react';
 import { useAuthActions } from '@convex-dev/auth/react';
+import { FaSlack } from 'react-icons/fa';
 
 import { EmailVerificationStep, ForgotPasswordStep, OnProvider, SignInFlow } from '@/types/auth';
 import { cn } from '@/lib/utils';
@@ -109,11 +110,13 @@ export const AuthScreen = () => {
   // Memoize header to prevent unnecessary re-renders
   const header = useMemo(
     () => (
-      <div className={cn('animate-fade-in-up mb-3 text-center')}>
+      <div
+        className={cn('animate-fade-in-up mb-3 flex items-center justify-center gap-2 text-center')}
+      >
+        <FaSlack className={cn('size-8 text-emerald-500')} />
         <h1
           className={cn(
-            'text-2xl font-semibold uppercase md:text-4xl',
-            'from-white-100 bg-gradient-to-r to-gray-200',
+            'bg-gradient-to-r from-emerald-500 to-sky-300 text-4xl font-semibold uppercase',
             'bg-clip-text text-transparent'
           )}
         >

@@ -107,17 +107,6 @@ const ForgotPasswordCardComponent = ({
           </Button>
         </form>
 
-        <div className={cn('flex flex-col gap-y-3')}>
-          <Button
-            type="button"
-            variant="ghost"
-            onClick={handleBackToSignIn}
-            className={cn('w-full')}
-          >
-            Back to Sign In
-          </Button>
-        </div>
-
         <div className={cn('text-center')}>
           <p className={cn('text-muted-foreground text-xs')}>
             Remember your password?{' '}
@@ -126,7 +115,7 @@ const ForgotPasswordCardComponent = ({
               onClick={handleBackToSignIn}
               className={cn('cursor-pointer text-sky-700 hover:underline')}
             >
-              Sign in instead
+              Sign In
             </button>
           </p>
         </div>

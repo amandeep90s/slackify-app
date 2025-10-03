@@ -82,6 +82,11 @@ const SignUpCardComponent = ({
     }
   };
 
+  const handleBackToSignIn = () => {
+    setSignInFlow('signIn');
+    setError(null);
+  };
+
   return (
     <Card className={cn('h-full w-full p-8')}>
       <CardHeader className={cn('p-0')}>
@@ -185,12 +190,13 @@ const SignUpCardComponent = ({
         <div className={cn('text-center')}>
           <p className={cn('text-muted-foreground text-xs')}>
             Already have an account?{' '}
-            <span
+            <button
+              type="button"
+              onClick={handleBackToSignIn}
               className={cn('cursor-pointer text-sky-700 hover:underline')}
-              onClick={() => setSignInFlow('signIn')}
             >
               Sign In
-            </span>
+            </button>
           </p>
         </div>
       </CardContent>
