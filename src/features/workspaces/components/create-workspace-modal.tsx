@@ -19,7 +19,7 @@ export const CreateWorkspaceModal = () => {
   const router = useRouter();
 
   const [open, setOpen] = useCreateWorkspaceModal();
-  const { mutate: createWorkspace, isPending, error: workspaceError } = useCreateWorkspace();
+  const { mutate: createWorkspace, isPending } = useCreateWorkspace();
 
   const [error, setError] = useState<string | null>(null);
 
@@ -61,8 +61,8 @@ export const CreateWorkspaceModal = () => {
           console.log('🚀 Redirecting to workspace:', `/workspace/${workspaceId}`);
           router.push(`/workspace/${workspaceId}`);
         },
-        onError: () => {
-          setError(workspaceError?.message || 'Failed to create workspace');
+        onError: (error) => {
+          setError(error?.message || 'Failed to create workspace');
         },
       }
     );
