@@ -57,9 +57,17 @@ export const resetPasswordSchema = z
     path: ['confirmPassword'],
   });
 
+export const workspaceSchema = z.object({
+  name: z
+    .string()
+    .min(3, 'Workspace name must be at least 3 characters')
+    .max(50, 'Workspace name must be less than 50 characters'),
+});
+
 // Types
 export type SignInFormData = z.infer<typeof signInSchema>;
 export type SignUpFormData = z.infer<typeof signUpSchema>;
 export type EmailVerificationFormData = z.infer<typeof emailVerificationSchema>;
 export type ForgotPasswordFormData = z.infer<typeof forgotPasswordSchema>;
 export type ResetPasswordFormData = z.infer<typeof resetPasswordSchema>;
+export type WorkspaceFormData = z.infer<typeof workspaceSchema>;

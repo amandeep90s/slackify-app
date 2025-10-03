@@ -3,7 +3,6 @@ import { useAuthActions } from '@convex-dev/auth/react';
 import { LogOut } from 'lucide-react';
 
 import { cn } from '@/lib/utils';
-import { useCurrentUser } from '@/hooks/use-current-user';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import {
   DropdownMenu,
@@ -12,6 +11,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { LoadingSpinner } from '@/components/core/loading-spinner';
+import { useCurrentUser } from '@/features/auth/api/use-current-user';
 
 export const UserButton = () => {
   const { signOut } = useAuthActions();
