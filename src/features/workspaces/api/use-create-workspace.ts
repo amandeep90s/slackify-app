@@ -1,6 +1,5 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useMutation as useConvexMutation } from 'convex/react';
-import { toast } from 'sonner';
 
 import { api } from '../../../../convex/_generated/api';
 
@@ -13,14 +12,11 @@ export const useCreateWorkspace = () => {
       const result = await createWorkspaceMutation({ name });
       return result;
     },
-    onSuccess: () => {
-      toast.success('Workspace created successfully!');
-      // Invalidate and refetch workspaces
-      queryClient.invalidateQueries({ queryKey: ['convexQuery', api.workspaces.get, {}] });
-    },
-    onError: (error) => {
-      toast.error('Failed to create workspace');
-      console.error('Create workspace error:', error);
+    // All success handling should happen in the component where the workspace ID is needed
+    meta: {
+      // Expose queryClient to components if needed
+      invalidateQueries: () =>
+        queryClient.invalidateQueries({ queryKey: ['convexQuery', api.workspaces.get, {}] }),
     },
   });
 };

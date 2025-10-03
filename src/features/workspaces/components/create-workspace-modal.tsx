@@ -1,6 +1,9 @@
 import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { useQueryClient } from '@tanstack/react-query';
 import { useForm } from 'react-hook-form';
+import { toast } from 'sonner';
 
 import { cn } from '@/lib/utils';
 import { WorkspaceFormData, workspaceSchema } from '@/lib/validators';
@@ -13,7 +16,12 @@ import { InputError } from '@/components/core/input-error';
 import { useCreateWorkspace } from '@/features/workspaces/api/use-create-workspace';
 import { useCreateWorkspaceModal } from '@/features/workspaces/store/use-create-workspace-modal';
 
+import { api } from '../../../../convex/_generated/api';
+
 export const CreateWorkspaceModal = () => {
+  const router = useRouter();
+  const queryClient = useQueryClient();
+
   const [open, setOpen] = useCreateWorkspaceModal();
   const { mutate: createWorkspace, isPending, error: workspaceError } = useCreateWorkspace();
 
@@ -39,9 +47,23 @@ export const CreateWorkspaceModal = () => {
     createWorkspace(
       { name: data.name },
       {
-        onSuccess: () => {
+        onSuccess: (workspaceId) => {
+          // Log workspace ID to verify it's being received
+          console.log('✅ Workspace created successfully with ID:', workspaceId);
+
+          // Show success toast
+          toast.success('Workspace created successfully!');
+
+          // Invalidate and refetch workspaces to update the list
+          queryClient.invalidateQueries({ queryKey: ['convexQuery', api.workspaces.get, {}] });
+
+          // Close modal and reset form
           setOpen(false);
           reset();
+
+          // Redirect to the newly created workspace
+          console.log('🚀 Redirecting to workspace:', `/workspace/${workspaceId}`);
+          router.push(`/workspace/${workspaceId}`);
         },
         onError: () => {
           setError(workspaceError?.message || 'Failed to create workspace');
@@ -56,7 +78,7 @@ export const CreateWorkspaceModal = () => {
 
   return (
     <Dialog open={open} onOpenChange={handleClose}>
-      <DialogContent>
+      <DialogContent aria-describedby="Create a new workspace">
         <DialogHeader>
           <DialogTitle>Add a workspace</DialogTitle>
         </DialogHeader>
