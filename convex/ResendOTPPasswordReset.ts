@@ -2,6 +2,12 @@ import Resend from '@auth/core/providers/resend';
 import { generateRandomString, RandomReader } from '@oslojs/crypto/random';
 import { Resend as ResendAPI } from 'resend';
 
+// Brand colors for consistent styling
+const BRAND_COLORS = {
+  PRIMARY: '#3f0e40',
+  LIGHT_BACKGROUND: '#f5f5f5',
+};
+
 export const ResendOTPPasswordReset = Resend({
   id: 'resend-otp',
   apiKey: process.env.AUTH_RESEND_KEY,
@@ -33,11 +39,11 @@ export const ResendOTPPasswordReset = Resend({
       subject: `Reset Your Slackify Password`,
       html: `
         <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-          <h2 style="color: #3F0E40;">Password Reset Request</h2>
+          <h2 style="color: ${BRAND_COLORS.PRIMARY};">Password Reset Request</h2>
           <p>We received a request to reset your password for your Slackify account.</p>
           <p>Please enter the verification code below to reset your password:</p>
-          <div style="background-color: #f5f5f5; padding: 20px; text-align: center; margin: 20px 0; border-radius: 8px;">
-            <h1 style="font-size: 32px; letter-spacing: 8px; color: #3F0E40; margin: 0;">${token}</h1>
+          <div style="background-color: ${BRAND_COLORS.LIGHT_BACKGROUND}; padding: 20px; text-align: center; margin: 20px 0; border-radius: 8px;">
+            <h1 style="font-size: 32px; letter-spacing: 8px; color: ${BRAND_COLORS.PRIMARY}; margin: 0;">${token}</h1>
           </div>
           <p>This code will expire in 10 minutes for security reasons.</p>
           <p><strong>If you didn't request a password reset, please ignore this email.</strong></p>

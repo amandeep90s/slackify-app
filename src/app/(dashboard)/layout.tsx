@@ -1,5 +1,6 @@
 'use client';
 
+import { TAILWIND_COLORS } from '@/lib/constants';
 import { cn } from '@/lib/utils';
 import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from '@/components/ui/resizable';
 import { Sidebar } from '@/components/core/sidebar';
@@ -18,7 +19,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
         <Sidebar />
 
         <ResizablePanelGroup autoSaveId={'dashboard-layout'} direction="horizontal">
-          <ResizablePanel defaultSize={20} minSize={11} className="bg-[#5e2c5f]">
+          <ResizablePanel defaultSize={20} minSize={11} className={TAILWIND_COLORS.BG.SIDEBAR}>
             <WorkspaceSidebar />
           </ResizablePanel>
           <ResizableHandle withHandle />

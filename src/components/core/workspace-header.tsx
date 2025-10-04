@@ -20,7 +20,7 @@ interface WorkspaceHeaderProps {
 
 export const WorkspaceHeader = ({ workspace, isAdmin }: WorkspaceHeaderProps) => {
   return (
-    <div className={cn('flex h-12 items-center justify-between gap-0.5 px-4')}>
+    <div className={cn('flex h-12 items-center justify-between gap-2 px-4')}>
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <Button
