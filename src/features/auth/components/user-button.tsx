@@ -18,13 +18,9 @@ export const UserButton = () => {
   const router = useRouter();
   const { data, isLoading } = useCurrentUser();
 
-  if (isLoading) {
-    return <LoadingSpinner />;
-  }
+  if (isLoading) return <LoadingSpinner size="sm" />;
 
-  if (!data) {
-    return null;
-  }
+  if (!data) return null;
 
   const { name, image } = data;
 

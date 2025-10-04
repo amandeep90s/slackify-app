@@ -11,9 +11,9 @@ export const currentUserQuery = query({
   args: {},
   handler: async (ctx) => {
     const userId = await getAuthUserId(ctx);
-    if (!userId) {
-      return null;
-    }
+
+    if (!userId) return null;
+
     // Fetch and return the user document from the database
     return await ctx.db.get(userId);
   },

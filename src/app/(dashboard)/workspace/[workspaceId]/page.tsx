@@ -6,7 +6,7 @@ import { useGetWorkspace } from '@/features/workspaces/api/use-get-workspace';
 
 export default function WorkspaceIdPage() {
   const workspaceId = useWorkspaceId();
-  const { data: workspace, isLoading } = useGetWorkspace({ id: workspaceId });
+  const { data: workspace, isLoading } = useGetWorkspace({ workspaceId });
 
   if (isLoading) {
     return <LoadingSpinner />;

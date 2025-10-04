@@ -25,9 +25,8 @@ export const create = mutation({
   },
   handler: async (ctx, { name }) => {
     const userId = await getAuthUserId(ctx);
-    if (!userId) {
-      throw new Error('Unauthorized');
-    }
+
+    if (!userId) throw new Error('Unauthorized');
 
     const joinCode = generateCode();
 
@@ -56,9 +55,8 @@ export const get = query({
   args: {},
   handler: async (ctx) => {
     const userId = await getAuthUserId(ctx);
-    if (!userId) {
-      return [];
-    }
+
+    if (!userId) return [];
 
     const members = await ctx.db
       .query('members')
@@ -88,24 +86,21 @@ export const get = query({
  * Get a workspace by its ID, ensuring the authenticated user is authorized to access it.
  */
 export const getById = query({
-  args: { id: v.id('workspaces') },
+  args: { workspaceId: v.id('workspaces') },
   handler: async (ctx, args) => {
     const userId = await getAuthUserId(ctx);
-    if (!userId) {
-      throw new Error('Unauthorized');
-    }
+
+    if (!userId) throw new Error('Unauthorized');
 
     const member = await ctx.db
       .query('members')
       .withIndex('by_workspace_id_user_id', (q) =>
-        q.eq('workspaceId', args.id).eq('userId', userId)
+        q.eq('workspaceId', args.workspaceId).eq('userId', userId)
       )
       .unique();
 
-    if (!member) {
-      return null;
-    }
+    if (!member) return null;
 
-    return await ctx.db.get(args.id);
+    return await ctx.db.get(args.workspaceId);
   },
 });

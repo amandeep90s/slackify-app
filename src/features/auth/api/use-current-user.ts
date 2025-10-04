@@ -1,10 +1,11 @@
-import { useQuery } from 'convex/react';
+import { convexQuery } from '@convex-dev/react-query';
+import { useQuery } from '@tanstack/react-query';
 
 import { api } from '../../../../convex/_generated/api';
 
 export const useCurrentUser = () => {
-  const data = useQuery(api.users.currentUserQuery);
-  const isLoading = data === undefined;
-
-  return { data, isLoading };
+  return useQuery({
+    ...convexQuery(api.users.currentUserQuery, {}),
+    staleTime: 1000 * 60 * 5, // 5 minutes
+  });
 };

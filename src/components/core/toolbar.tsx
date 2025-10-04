@@ -7,7 +7,7 @@ import { useGetWorkspace } from '@/features/workspaces/api/use-get-workspace';
 
 export const Toolbar = () => {
   const workspaceId = useWorkspaceId();
-  const { data } = useGetWorkspace({ id: workspaceId });
+  const { data } = useGetWorkspace({ workspaceId });
 
   return (
     <nav className={cn('bg-primary-background flex h-10 items-center justify-between p-1.5')}>

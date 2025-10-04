@@ -1,5 +1,5 @@
 import { useRouter } from 'next/navigation';
-import { Loader, Plus } from 'lucide-react';
+import { Plus } from 'lucide-react';
 
 import { cn } from '@/lib/utils';
 import { useWorkspaceId } from '@/hooks/use-workspace-id';
@@ -14,6 +14,7 @@ import { useGetWorkspaces } from '@/features/workspaces/api/use-get-workspaces';
 import { useCreateWorkspaceModal } from '@/features/workspaces/store/use-create-workspace-modal';
 
 import { Button } from '../ui/button';
+import { LoadingSpinner } from './loading-spinner';
 
 export const WorkspaceSwitcher = () => {
   const workspaceId = useWorkspaceId();
@@ -22,7 +23,7 @@ export const WorkspaceSwitcher = () => {
   const [, setOpen] = useCreateWorkspaceModal();
 
   const { data: workspaces } = useGetWorkspaces();
-  const { data: workspace, isLoading: workspaceLoading } = useGetWorkspace({ id: workspaceId });
+  const { data: workspace, isLoading: workspaceLoading } = useGetWorkspace({ workspaceId });
 
   const filteredWorkspaces = workspaces?.filter((ws) => ws._id !== workspaceId);
 
@@ -36,7 +37,7 @@ export const WorkspaceSwitcher = () => {
           size={'icon'}
         >
           {workspaceLoading ? (
-            <Loader className={cn('size-5 shrink-0 animate-spin')} />
+            <LoadingSpinner size="sm" variant="primary" />
           ) : (
             workspace?.name.charAt(0).toUpperCase()
           )}

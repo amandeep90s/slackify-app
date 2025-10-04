@@ -4,13 +4,13 @@ import { useQuery } from '@tanstack/react-query';
 import { api } from '../../../../convex/_generated/api';
 import { Id } from '../../../../convex/_generated/dataModel';
 
-interface UseGetWorkspaceProps {
+interface UseCurrentMemberProps {
   workspaceId: Id<'workspaces'>;
 }
 
-export const useGetWorkspace = ({ workspaceId }: UseGetWorkspaceProps) => {
+export const useCurrentMember = ({ workspaceId }: UseCurrentMemberProps) => {
   return useQuery({
-    ...convexQuery(api.workspaces.getById, { workspaceId }),
+    ...convexQuery(api.members.currentMember, { workspaceId }),
     // You can add additional React Query options here if needed
     staleTime: 1000 * 60 * 5, // 5 minutes
   });
