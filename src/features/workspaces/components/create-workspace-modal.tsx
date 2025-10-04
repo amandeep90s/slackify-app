@@ -7,7 +7,13 @@ import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
 import { WorkspaceFormData, workspaceSchema } from '@/lib/validators';
 import { Button } from '@/components/ui/button';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Error } from '@/components/core/error';
@@ -30,7 +36,7 @@ export const CreateWorkspaceModal = () => {
     reset,
   } = useForm<WorkspaceFormData>({
     resolver: zodResolver(workspaceSchema),
-    mode: 'onBlur',
+    mode: 'onChange',
     reValidateMode: 'onChange',
     shouldFocusError: true,
     defaultValues: {
@@ -77,6 +83,7 @@ export const CreateWorkspaceModal = () => {
       <DialogContent aria-describedby="Create a new workspace">
         <DialogHeader>
           <DialogTitle>Add a workspace</DialogTitle>
+          <DialogDescription>Create a new workspace for your projects.</DialogDescription>
         </DialogHeader>
 
         {error && <Error error={error} />}
@@ -91,7 +98,6 @@ export const CreateWorkspaceModal = () => {
               {...register('name')}
               name="name"
               id="name"
-              autoFocus
               placeholder="E.g. Work, Personal, Home"
               disabled={isPending}
               className={cn(errors.name && 'border-destructive focus:visible:ring-destructive/20')}

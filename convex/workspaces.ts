@@ -1,7 +1,20 @@
 import { getAuthUserId } from '@convex-dev/auth/server';
+import { generateRandomString, type RandomReader } from '@oslojs/crypto/random';
 import { v } from 'convex/values';
 
 import { mutation, query } from './_generated/server';
+
+const random: RandomReader = {
+  read(bytes) {
+    crypto.getRandomValues(bytes);
+  },
+};
+
+const generateCode = () => {
+  const alphabet = '0123456789abcdefghijklmnopqrstuvwxyz';
+
+  return generateRandomString(random, alphabet, 6);
+};
 
 /**
  * Create a new workspace associated with the authenticated user.
@@ -16,8 +29,7 @@ export const create = mutation({
       throw new Error('Unauthorized');
     }
 
-    // TODO: Join Code method to add the user as a member of the workspace
-    const joinCode = '123456';
+    const joinCode = generateCode();
 
     // Convex always returns the ID as a string
     const workspaceId = await ctx.db.insert('workspaces', {
@@ -26,17 +38,49 @@ export const create = mutation({
       joinCode,
     });
 
+    // Assign the user as an admin of the workspace
+    await ctx.db.insert('members', {
+      userId,
+      workspaceId,
+      role: 'admin',
+    });
+
     return workspaceId;
   },
 });
 
 /**
- * Get all workspaces. In a real app, you'd likely want to paginate this.
+ * Get all workspaces the authenticated user is a member of.
  */
 export const get = query({
   args: {},
   handler: async (ctx) => {
-    return await ctx.db.query('workspaces').collect();
+    const userId = await getAuthUserId(ctx);
+    if (!userId) {
+      return [];
+    }
+
+    const members = await ctx.db
+      .query('members')
+      .withIndex('by_user_id', (q) => q.eq('userId', userId))
+      .collect();
+
+    if (members.length === 0) {
+      return [];
+    }
+
+    const workspaceIds = members.map((member) => member.workspaceId);
+
+    const workspaces = [];
+
+    for (const workspaceId of workspaceIds) {
+      const details = await ctx.db.get(workspaceId);
+      if (details) {
+        workspaces.push(details);
+      }
+    }
+
+    return workspaces;
   },
 });
 
@@ -49,6 +93,17 @@ export const getById = query({
     const userId = await getAuthUserId(ctx);
     if (!userId) {
       throw new Error('Unauthorized');
+    }
+
+    const member = await ctx.db
+      .query('members')
+      .withIndex('by_workspace_id_user_id', (q) =>
+        q.eq('workspaceId', args.id).eq('userId', userId)
+      )
+      .unique();
+
+    if (!member) {
+      return null;
     }
 
     return await ctx.db.get(args.id);
