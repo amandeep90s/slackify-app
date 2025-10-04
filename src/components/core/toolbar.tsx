@@ -10,7 +10,7 @@ export const Toolbar = () => {
   const { data } = useGetWorkspace({ id: workspaceId });
 
   return (
-    <nav className={cn('bg-auth-background flex h-10 items-center justify-between p-1.5')}>
+    <nav className={cn('bg-primary-background flex h-10 items-center justify-between p-1.5')}>
       <div className={cn('flex-1')}></div>
 
       <div className={cn('max-w-2xl min-w-3xs shrink grow-[2]')}>

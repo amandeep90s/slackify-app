@@ -31,7 +31,7 @@ export const LoadingSpinner = ({
   variant = 'white',
 }: LoadingSpinnerProps) => {
   return (
-    <div className={cn('flex items-center justify-center p-8', containerClassName)}>
+    <div className={cn('flex items-center justify-center', containerClassName)}>
       <div
         className={cn(
           'animate-spin rounded-full border-2',

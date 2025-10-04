@@ -45,7 +45,7 @@ export const UserButton = () => {
       </DropdownMenuTrigger>
 
       <DropdownMenuContent align="center" side="right" className={cn('w-60')}>
-        <DropdownMenuItem onClick={handleSignOut} className={cn('h-1o cursor-pointer')}>
+        <DropdownMenuItem onClick={handleSignOut} className={cn('cursor-pointer')}>
           <LogOut className={cn('mr-2 size-4')} />
           Sign Out
         </DropdownMenuItem>

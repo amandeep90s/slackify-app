@@ -128,7 +128,7 @@ export const AuthScreen = () => {
   );
 
   return (
-    <div className={cn('bg-auth-background flex min-h-screen items-center justify-center')}>
+    <div className={cn('bg-primary-background flex min-h-screen items-center justify-center')}>
       <div className={cn('w-full max-w-sm px-4 md:h-auto md:max-w-md md:px-0')}>
         {header}
         <Suspense fallback={<LoadingSpinner />}>
